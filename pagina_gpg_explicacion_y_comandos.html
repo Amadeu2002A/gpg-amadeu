@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>GPG: Guía rápida con comandos</title>
+  <style>
+    :root{--bg:#0f1724;--card:#0b1220;--accent:#2dd4bf;--muted:#9aa4b2;--glass:rgba(255,255,255,0.03)}
+    body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial; background:linear-gradient(180deg,#071024 0%, #07172a 100%);color:#e6eef6}
+    .container{max-width:980px;margin:36px auto;padding:24px}
+    .hero{display:flex;gap:20px;align-items:center}
+    .card{background:var(--card);border-radius:12px;padding:18px;box-shadow:0 6px 24px rgba(2,6,23,0.6);flex:1}
+    h1{margin:0 0 6px;font-size:28px}
+    p.lead{color:var(--muted);margin:0 0 12px}
+    .badge{display:inline-block;background:var(--glass);padding:6px 10px;border-radius:999px;font-weight:600;color:var(--accent);font-size:13px}
+    img.logo{width:110px;height:110px;object-fit:contain;border-radius:12px;background:linear-gradient(180deg,#07182a,#08132a);padding:12px}
+    section{margin-top:18px}
+    pre{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:12px;border-radius:8px;overflow:auto}
+    code{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Roboto Mono,monospace;font-size:13px}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:18px}
+    .sidebar{padding:14px;border-radius:10px;background:rgba(255,255,255,0.02)}
+    .cmd-row{display:flex;gap:8px;align-items:center}
+    button.copy{background:none;border:1px solid rgba(255,255,255,0.06);color:var(--accent);padding:6px 10px;border-radius:8px;cursor:pointer}
+    footer{opacity:0.75;color:var(--muted);font-size:13px;margin-top:22px}
+    .note{font-size:13px;color:var(--muted);margin-top:8px}
+    a{color:var(--accent);text-decoration:none}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="hero">
+      <div class="card">
+        <span class="badge">Cripta · Firma · Verifica</span>
+        <h1>GPG — guía rápida con comandos</h1>
+        <p class="lead">Página práctica que explica los comandos GPG (GNU Privacy Guard) más habituales, con ejemplos listos para copiar y ejecutar en la terminal.</p>
+
+        <section>
+          <h3>¿Qué es GPG?</h3>
+          <p class="note">GPG es una implementación libre de OpenPGP. Permite generar pares de claves (pública/privada), cifrar mensajes o archivos, firmarlos digitalmente y verificar firmas. Es una herramienta esencial para seguridad y privacidad en comunicación y almacenamiento.</p>
+        </section>
+
+        <section>
+          <h3>Flujo básico (resumen)</h3>
+          <ul>
+            <li>1. Generar par de claves (privada + pública).</li>
+            <li>2. Compartir tu clave pública con quien quiera enviarte datos cifrados o verificar firmas.</li>
+            <li>3. Cifrar para la clave pública del destinatario.</li>
+            <li>4. Firmar con tu clave privada para garantizar integridad y origen.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h3>Comandos útiles</h3>
+
+          <h4>Generar un par de claves interactivo</h4>
+          <pre><code id="cmd1">gpg --full-generate-key
+# seguir las opciones en pantalla (tipo de clave, tamaño, caducidad, nombre y email)</code></pre>
+          <div class="cmd-row"><button class="copy" data-target="cmd1">Copiar</button><span class="note">Usa --batch para automatizar en scripts.</span></div>
+
+          <h4>Listar claves (local)</h4>
+          <pre><code id="cmd2">gpg --list-keys         # claves públicas
+gpg --list-secret-keys  # claves privadas</code></pre>
+          <div class="cmd-row"><button class="copy" data-target="cmd2">Copiar</button></div>
+
+          <h4>Exportar / Importar</h4>
+          <pre><code id="cmd3"># exportar clave pública
+gpg --armor --export tu_email@example.com &gt; mi_clave_publica.asc
+
+# importar clave pública de otra persona
+gpg --import clave_de_otra_persona.asc</code></pre>
+          <div class="cmd-row"><button class="copy" data-target="cmd3">Copiar</button></div>
+
+          <h4>Cifrar y descifrar archivos</h4>
+          <pre><code id="cmd4"># cifrar para destinatario (usa su clave pública)
+gpg --output secreto.gpg --encrypt --recipient 'destinatario@example.com' secreto.txt
+
+# descifrar (el receptor usa su clave privada)
+gpg --output secreto.txt --decrypt secreto.gpg</code></pre>
+          <div class="cmd-row"><button class="copy" data-target="cmd4">Copiar</button></div>
+
+          <h4>Firmar y verificar</h4>
+          <pre><code id="cmd5"># firma clara (texto legible + firma)
+gpg --clearsign mensaje.txt
+
+# firma binaria y archivo separado
+gpg --output mensaje.sig --sign mensaje.txt
+
+# verificar firma
+gpg --verify mensaje.sig mensaje.txt</code></pre>
+          <div class="cmd-row"><button class="copy" data-target="cmd5">Copiar</button></div>
+
+          <h4>Exportar clave privada (con cuidado)</h4>
+          <pre><code id="cmd6"># exportar privada (proteger el archivo resultante)
+gpg --armor --export-secret-keys tu_email@example.com &gt; mi_clave_privada.asc
+# NO compartas este archivo sin extremo cifrado y control</code></pre>
+          <div class="cmd-row"><button class="copy" data-target="cmd6">Copiar</button></div>
+
+          <h4>Revocar clave</h4>
+          <pre><code id="cmd7"># generar un certificado de revocación (recomendado al crear la clave)
+gpg --output revocacion.asc --gen-revoke tu_email@example.com
+
+# publicar o guardar el certificado para usarlo si la clave se ve comprometida</code></pre>
+          <div class="cmd-row"><button class="copy" data-target="cmd7">Copiar</button></div>
+
+          <p class="note">Consejo: nunca compartas tu clave privada. Mantén frases de paso fuertes y considera usar un agente (ssh- or gpg-agent) para no introducir la passphrase a mano todo el tiempo.</p>
+        </section>
+
+        <footer>Creado para aprender y practicar GPG • Modifica las direcciones de correo por las tuyas antes de ejecutar.</footer>
+      </div>
+
+      <aside class="sidebar card">
+        <img class="logo" src="https://upload.wikimedia.org/wikipedia/commons/8/85/GnuPG_Logo.svg" alt="GnuPG logo" />
+        <h4 style="margin-top:12px;margin-bottom:6px">Imagen & tema</h4>
+        <p class="note">La imagen corresponde al logotipo de GnuPG (uso ilustrativo). Puedes sustituirla por cualquier otra URL en el atributo src de la etiqueta &lt;img&gt; en el HTML.</p>
+
+        <h4 style="margin-top:12px">Acciones</h4>
+        <p class="note">Puedes usar el botón de copiar junto a cada comando para pegarlo en tu terminal. Si quieres, puedo añadir un botón para descargar la página como .html.</p>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    // Copiar al portapapeles
+    document.querySelectorAll('button.copy').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const id = btn.getAttribute('data-target');
+        const code = document.getElementById(id).innerText;
+        try{
+          await navigator.clipboard.writeText(code);
+          btn.textContent = 'Copiado ✓';
+          setTimeout(()=>btn.textContent='Copiar',1200);
+        }catch(e){
+          alert('No se pudo copiar automáticamente. Selecciona y copia manualmente.');
+        }
+      });
+    });
+  </script>
+</body>
+</html>
